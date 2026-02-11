@@ -1,18 +1,24 @@
-import { Suspense, useEffect } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { AnimatePresence } from 'framer-motion';
 import { useMuseumStore } from '@/store/museumStore';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { PROJECTS, getAlcoveProgress } from '@/data/projects';
 import { HeroOverlay } from '@/components/museum/HeroOverlay';
 import { CaseStudyPanel } from '@/components/museum/CaseStudyPanel';
+import { BookingModal } from '@/components/museum/BookingModal';
 import { LoadingScreen } from '@/components/museum/LoadingScreen';
 import { MobileFallback } from '@/components/museum/MobileFallback';
 import MuseumScene from '@/components/museum/MuseumScene';
+
+const SNAP_DEBOUNCE = 250;
+const alcoveProgresses = PROJECTS.map((_, i) => getAlcoveProgress(i));
 
 const Index = () => {
   const isMobile = useIsMobile();
   const cameraState = useMuseumStore((s) => s.cameraState);
   const showCaseStudy = useMuseumStore((s) => s.showCaseStudy);
+  const showBooking = useMuseumStore((s) => s.showBooking);
   const isLoaded = useMuseumStore((s) => s.isLoaded);
   const corridorProgress = useMuseumStore((s) => s.corridorProgress);
   const setCorridorProgress = useMuseumStore((s) => s.setCorridorProgress);
@@ -21,13 +27,13 @@ const Index = () => {
   const zoomToArtwork = useMuseumStore((s) => s.zoomToArtwork);
   const exitCaseStudy = useMuseumStore((s) => s.exitCaseStudy);
   const enterGallery = useMuseumStore((s) => s.enterGallery);
+  const toggleShowcaseLighting = useMuseumStore((s) => s.toggleShowcaseLighting);
+  const showcaseLighting = useMuseumStore((s) => s.showcaseLighting);
 
-  // Sync mobile detection
-  useEffect(() => {
-    setIsMobile(isMobile);
-  }, [isMobile, setIsMobile]);
+  const snapTimer = useRef<number>(0);
 
-  // Detect reduced motion preference
+  useEffect(() => { setIsMobile(isMobile); }, [isMobile, setIsMobile]);
+
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
     setReducedMotion(mq.matches);
@@ -36,69 +42,88 @@ const Index = () => {
     return () => mq.removeEventListener('change', handler);
   }, [setReducedMotion]);
 
-  // Scroll → corridor camera progress
+  // Scroll → corridor progress + snap
   useEffect(() => {
     if (cameraState !== 'corridor') return;
     const handleScroll = () => {
       const max = document.documentElement.scrollHeight - window.innerHeight;
       if (max <= 0) return;
-      setCorridorProgress(Math.min(1, Math.max(0, window.scrollY / max)));
+      const p = Math.min(1, Math.max(0, window.scrollY / max));
+      setCorridorProgress(p);
+
+      clearTimeout(snapTimer.current);
+      snapTimer.current = window.setTimeout(() => {
+        let nearest = alcoveProgresses[0];
+        let minDist = Math.abs(p - nearest);
+        for (const ap of alcoveProgresses) {
+          const d = Math.abs(p - ap);
+          if (d < minDist) { minDist = d; nearest = ap; }
+        }
+        if (minDist < 0.06 && minDist > 0.005) {
+          window.scrollTo({ top: nearest * max, behavior: 'smooth' });
+        }
+      }, SNAP_DEBOUNCE);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(snapTimer.current);
+    };
   }, [cameraState, setCorridorProgress]);
 
-  // Lock body scroll when not in corridor mode
+  // Lock body scroll
   useEffect(() => {
-    if (cameraState !== 'corridor' || showCaseStudy) {
+    if (cameraState !== 'corridor' || showCaseStudy || showBooking) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [cameraState, showCaseStudy]);
+    return () => { document.body.style.overflow = ''; };
+  }, [cameraState, showCaseStudy, showBooking]);
 
   // Keyboard navigation
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && showCaseStudy) {
-        exitCaseStudy();
-        return;
+      if (e.key === 'Escape') {
+        if (showCaseStudy) { exitCaseStudy(); return; }
+        if (showBooking) { useMuseumStore.getState().setShowBooking(false); return; }
       }
-      if (e.key === 'Enter' && cameraState === 'entrance') {
-        enterGallery();
-        return;
-      }
-      if (e.key === 'Enter' && cameraState === 'corridor' && Math.abs(corridorProgress - 0.6) < 0.15) {
-        zoomToArtwork('project-01');
-        return;
-      }
-      if (cameraState === 'corridor' && !showCaseStudy) {
-        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-          e.preventDefault();
-          window.scrollBy(0, 120);
+      if (e.key === 'Enter' && cameraState === 'entrance') { enterGallery(); return; }
+      if (e.key === 'Enter' && cameraState === 'corridor') {
+        let nearestIdx = 0;
+        let minDist = Infinity;
+        alcoveProgresses.forEach((ap, i) => {
+          const d = Math.abs(corridorProgress - ap);
+          if (d < minDist) { minDist = d; nearestIdx = i; }
+        });
+        if (minDist < 0.06) {
+          zoomToArtwork(PROJECTS[nearestIdx].id, nearestIdx);
         }
-        if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-          e.preventDefault();
-          window.scrollBy(0, -120);
-        }
+        return;
+      }
+      if (cameraState === 'corridor' && !showCaseStudy && !showBooking) {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); window.scrollBy(0, 200); }
+        if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); window.scrollBy(0, -200); }
       }
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [cameraState, showCaseStudy, corridorProgress, exitCaseStudy, enterGallery, zoomToArtwork]);
+  }, [cameraState, showCaseStudy, showBooking, corridorProgress, exitCaseStudy, enterGallery, zoomToArtwork]);
 
-  if (isMobile) return <MobileFallback />;
+  if (isMobile) return (
+    <>
+      <MobileFallback />
+      <BookingModal />
+    </>
+  );
 
   return (
     <div
       className="relative"
       style={{
-        height: cameraState === 'corridor' ? '400vh' : '100vh',
-        background: 'hsl(0 0% 4%)',
+        height: cameraState === 'corridor' ? '1200vh' : '100vh',
+        background: 'hsl(var(--museum-bg))',
       }}
     >
       <AnimatePresence>{!isLoaded && <LoadingScreen />}</AnimatePresence>
@@ -106,7 +131,7 @@ const Index = () => {
       <div className="fixed inset-0">
         <Canvas
           shadows
-          camera={{ fov: 50, near: 0.1, far: 100, position: [0, 1.6, 5] }}
+          camera={{ fov: 50, near: 0.1, far: 200, position: [0, 2.2, 8] }}
           gl={{ antialias: true, alpha: false }}
           dpr={[1, 1.5]}
         >
@@ -117,8 +142,23 @@ const Index = () => {
       </div>
 
       <AnimatePresence>{cameraState === 'entrance' && isLoaded && <HeroOverlay />}</AnimatePresence>
-
       <AnimatePresence>{showCaseStudy && <CaseStudyPanel />}</AnimatePresence>
+      <BookingModal />
+
+      {/* Showcase lighting HUD */}
+      {cameraState === 'corridor' && !showCaseStudy && (
+        <button
+          onClick={toggleShowcaseLighting}
+          className="fixed top-4 right-4 z-10 px-3 py-1.5 text-[9px] tracking-[0.2em] uppercase border transition-colors"
+          style={{
+            borderColor: showcaseLighting ? 'hsl(38 45% 58% / 0.5)' : 'hsl(38 38% 93% / 0.15)',
+            color: showcaseLighting ? 'hsl(38 45% 58%)' : 'hsl(38 38% 93% / 0.4)',
+            background: showcaseLighting ? 'hsl(38 45% 58% / 0.1)' : 'transparent',
+          }}
+        >
+          {showcaseLighting ? '● Showcase' : '○ Showcase'}
+        </button>
+      )}
 
       {/* Scroll hint */}
       {cameraState === 'corridor' && !showCaseStudy && (
