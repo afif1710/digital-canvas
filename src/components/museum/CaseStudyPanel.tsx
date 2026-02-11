@@ -1,23 +1,13 @@
 import { useMuseumStore } from '@/store/museumStore';
+import { PROJECTS } from '@/data/projects';
 import { motion } from 'framer-motion';
-
-const PROJECT = {
-  title: 'Meridian Rebrand',
-  role: 'Lead Designer & Art Director',
-  challenge:
-    'Meridian, a luxury watchmaker, needed a complete brand overhaul to appeal to a younger demographic while maintaining its heritage appeal.',
-  solution:
-    'We developed a visual identity that bridges classic craftsmanship with contemporary minimalism, using a refined color palette and bespoke typography.',
-  outcomes:
-    'The rebrand led to a 40% increase in brand awareness among 25–35 year-olds and a 28% uplift in direct-to-consumer sales within 6 months.',
-  kpis: [
-    { label: 'Brand Awareness', value: '+40%' },
-    { label: 'DTC Sales', value: '+28%' },
-  ],
-};
 
 export function CaseStudyPanel() {
   const exitCaseStudy = useMuseumStore((s) => s.exitCaseStudy);
+  const activeArtworkIndex = useMuseumStore((s) => s.activeArtworkIndex);
+  const project = PROJECTS[activeArtworkIndex];
+
+  if (!project) return null;
 
   return (
     <motion.div
@@ -43,24 +33,30 @@ export function CaseStudyPanel() {
           ✕ Close
         </button>
 
-        {/* Hero placeholder */}
-        <div className="w-full h-48 bg-museum-wall mb-6" aria-hidden="true" />
+        {/* Hero image */}
+        <div className="w-full h-48 bg-museum-wall mb-6 overflow-hidden">
+          <img
+            src={project.heroImage}
+            alt={project.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
 
         <p className="text-museum-brass text-[10px] tracking-[0.35em] uppercase mb-2">
-          {PROJECT.role}
+          {project.role}
         </p>
         <h2 className="font-serif text-3xl md:text-4xl text-museum-white mb-6">
-          {PROJECT.title}
+          {project.title}
         </h2>
 
         <div className="space-y-5 text-museum-white/65 text-sm leading-relaxed">
-          <Section title="Challenge">{PROJECT.challenge}</Section>
-          <Section title="Solution">{PROJECT.solution}</Section>
-          <Section title="Outcomes">{PROJECT.outcomes}</Section>
+          <Section title="Challenge">{project.challenge}</Section>
+          <Section title="Solution">{project.solution}</Section>
+          <Section title="Outcomes">{project.outcomes}</Section>
         </div>
 
         <div className="flex gap-10 mt-8 pt-6 border-t border-museum-white/10">
-          {PROJECT.kpis.map((kpi) => (
+          {project.kpis.map((kpi) => (
             <div key={kpi.label}>
               <p className="text-museum-brass text-3xl font-serif">{kpi.value}</p>
               <p className="text-museum-white/40 text-[10px] tracking-[0.25em] uppercase mt-1">
@@ -77,9 +73,7 @@ export function CaseStudyPanel() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h3 className="text-museum-white text-[10px] tracking-[0.25em] uppercase mb-1.5">
-        {title}
-      </h3>
+      <h3 className="text-museum-white text-[10px] tracking-[0.25em] uppercase mb-1.5">{title}</h3>
       <p>{children}</p>
     </div>
   );
