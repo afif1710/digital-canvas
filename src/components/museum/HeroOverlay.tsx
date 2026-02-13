@@ -4,6 +4,7 @@ import { useRef, useState, type ReactNode } from 'react';
 
 export function HeroOverlay() {
   const enterGallery = useMuseumStore((s) => s.enterGallery);
+  const setShowBooking = useMuseumStore((s) => s.setShowBooking);
 
   return (
     <motion.div
@@ -37,7 +38,7 @@ export function HeroOverlay() {
           className="flex gap-5 justify-center"
         >
           <MagneticButton onClick={enterGallery}>Enter Gallery</MagneticButton>
-          <MagneticButton variant="outline">Book Viewing</MagneticButton>
+          <MagneticButton variant="outline" onClick={() => setShowBooking(true)}>Book Viewing</MagneticButton>
         </motion.div>
       </div>
     </motion.div>

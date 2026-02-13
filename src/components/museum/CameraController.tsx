@@ -2,17 +2,23 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { useMuseumStore } from '@/store/museumStore';
 import { useRef, useEffect } from 'react';
 import * as THREE from 'three';
-import { CORRIDOR_START_Z, CORRIDOR_END_Z, CAMERA_Y, getAlcovePosition } from '@/data/projects';
+import { CORRIDOR_START_Z, CORRIDOR_END_Z, CAMERA_Y, getAlcovePosition, getAlcoveProgress } from '@/data/projects';
 
 const ENTRANCE_POS = new THREE.Vector3(0, CAMERA_Y, 8);
 const ENTRANCE_LOOK = new THREE.Vector3(0, 1.6, 0);
 
-const MAX_YAW = (4 * Math.PI) / 180;
-const MAX_PITCH = (3 * Math.PI) / 180;
+const MAX_YAW = (6 * Math.PI) / 180;
+const MAX_PITCH = (4 * Math.PI) / 180;
 
 const _corridorPos = new THREE.Vector3();
 const _lookTarget = new THREE.Vector3();
 const _finalLook = new THREE.Vector3();
+
+const FIRST_ALCOVE_PROGRESS = getAlcoveProgress(0);
+
+function easeOutCubic(t: number) {
+  return 1 - Math.pow(1 - t, 3);
+}
 
 function getCorridorPos(progress: number): THREE.Vector3 {
   const z = CORRIDOR_START_Z + progress * (CORRIDOR_END_Z - CORRIDOR_START_Z);
@@ -27,16 +33,48 @@ export function CameraController() {
   const targetLook = useRef(new THREE.Vector3());
   const smoothTilt = useRef({ x: 0, y: 0 });
   const isTouchDevice = useRef(false);
-  const tiltIntensity = useRef(1);
+  const tiltIntensity = useRef(0.7);
 
   useEffect(() => {
     isTouchDevice.current = 'ontouchstart' in window;
     const v = getComputedStyle(document.documentElement).getPropertyValue('--camera-tilt-intensity');
-    tiltIntensity.current = parseFloat(v) || 1;
+    tiltIntensity.current = parseFloat(v) || 0.7;
+  }, []);
+
+  // Watch for CSS variable changes (HUD slider)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const v = getComputedStyle(document.documentElement).getPropertyValue('--camera-tilt-intensity');
+      tiltIntensity.current = parseFloat(v) || 0.7;
+    }, 500);
+    return () => clearInterval(interval);
   }, []);
 
   useFrame((state, delta) => {
-    const { cameraState, corridorProgress, reducedMotion, activeArtworkIndex, showCaseStudy } = useMuseumStore.getState();
+    const store = useMuseumStore.getState();
+    const { cameraState, corridorProgress, reducedMotion, activeArtworkIndex, showCaseStudy, glideActive, glideStartTime, glideFrom, glideDuration } = store;
+    let { glideTo } = store;
+
+    // Handle auto-glide
+    if (glideActive && cameraState === 'corridor') {
+      if (glideTo < 0) glideTo = FIRST_ALCOVE_PROGRESS; // sentinel replacement
+      const now = performance.now() / 1000;
+      const elapsed = now - glideStartTime;
+      const t = Math.min(1, elapsed / glideDuration);
+      const eased = easeOutCubic(t);
+      const p = glideFrom + (glideTo - glideFrom) * eased;
+      store.setCorridorProgress(p);
+
+      // Sync scroll position
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      if (max > 0) {
+        window.scrollTo({ top: p * max, behavior: 'auto' });
+      }
+
+      if (t >= 1) {
+        store.stopGlide();
+      }
+    }
 
     const speed = reducedMotion ? 8 : 2.5;
     const factor = 1 - Math.exp(-speed * delta);
@@ -61,7 +99,7 @@ export function CameraController() {
     currentLook.current.lerp(targetLook.current, factor);
 
     // Pointer tilt (desktop only, not in modal, not reduced motion)
-    const enableTilt = !reducedMotion && !isTouchDevice.current && !showCaseStudy && cameraState === 'corridor';
+    const enableTilt = !reducedMotion && !isTouchDevice.current && !showCaseStudy && cameraState === 'corridor' && !glideActive;
     if (enableTilt) {
       const intensity = tiltIntensity.current;
       const tX = state.pointer.y * MAX_PITCH * intensity;

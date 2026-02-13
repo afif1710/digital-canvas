@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useRef } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { AnimatePresence } from 'framer-motion';
 import { useMuseumStore } from '@/store/museumStore';
@@ -11,7 +11,7 @@ import { LoadingScreen } from '@/components/museum/LoadingScreen';
 import { MobileFallback } from '@/components/museum/MobileFallback';
 import MuseumScene from '@/components/museum/MuseumScene';
 
-const SNAP_DEBOUNCE = 250;
+const SNAP_DEBOUNCE = 150;
 const alcoveProgresses = PROJECTS.map((_, i) => getAlcoveProgress(i));
 
 const Index = () => {
@@ -29,8 +29,11 @@ const Index = () => {
   const enterGallery = useMuseumStore((s) => s.enterGallery);
   const toggleShowcaseLighting = useMuseumStore((s) => s.toggleShowcaseLighting);
   const showcaseLighting = useMuseumStore((s) => s.showcaseLighting);
+  const glideActive = useMuseumStore((s) => s.glideActive);
+  const storedProgress = useMuseumStore((s) => s.storedProgress);
 
   const snapTimer = useRef<number>(0);
+  const [tiltValue, setTiltValue] = useState(0.7);
 
   useEffect(() => { setIsMobile(isMobile); }, [isMobile, setIsMobile]);
 
@@ -42,10 +45,26 @@ const Index = () => {
     return () => mq.removeEventListener('change', handler);
   }, [setReducedMotion]);
 
-  // Scroll → corridor progress + snap
+  // When exiting case study, sync scroll to storedProgress
+  const prevShowCaseStudy = useRef(showCaseStudy);
+  useEffect(() => {
+    if (prevShowCaseStudy.current && !showCaseStudy && cameraState === 'corridor') {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      if (max > 0) {
+        window.scrollTo({ top: storedProgress * max, behavior: 'auto' });
+      }
+    }
+    prevShowCaseStudy.current = showCaseStudy;
+  }, [showCaseStudy, cameraState, storedProgress]);
+
+  // Scroll → corridor progress + snap (ignore during glide)
   useEffect(() => {
     if (cameraState !== 'corridor') return;
     const handleScroll = () => {
+      if (useMuseumStore.getState().glideActive) {
+        // User scrolled during glide — interrupt it
+        useMuseumStore.getState().stopGlide();
+      }
       const max = document.documentElement.scrollHeight - window.innerHeight;
       if (max <= 0) return;
       const p = Math.min(1, Math.max(0, window.scrollY / max));
@@ -111,6 +130,13 @@ const Index = () => {
     return () => window.removeEventListener('keydown', handleKey);
   }, [cameraState, showCaseStudy, showBooking, corridorProgress, exitCaseStudy, enterGallery, zoomToArtwork]);
 
+  // Tilt slider handler
+  const handleTiltChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = parseFloat(e.target.value);
+    setTiltValue(v);
+    document.documentElement.style.setProperty('--camera-tilt-intensity', String(v));
+  };
+
   if (isMobile) return (
     <>
       <MobileFallback />
@@ -145,23 +171,51 @@ const Index = () => {
       <AnimatePresence>{showCaseStudy && <CaseStudyPanel />}</AnimatePresence>
       <BookingModal />
 
-      {/* Showcase lighting HUD */}
+      {/* HUD controls */}
       {cameraState === 'corridor' && !showCaseStudy && (
-        <button
-          onClick={toggleShowcaseLighting}
-          className="fixed top-4 right-4 z-10 px-3 py-1.5 text-[9px] tracking-[0.2em] uppercase border transition-colors"
-          style={{
-            borderColor: showcaseLighting ? 'hsl(38 45% 58% / 0.5)' : 'hsl(38 38% 93% / 0.15)',
-            color: showcaseLighting ? 'hsl(38 45% 58%)' : 'hsl(38 38% 93% / 0.4)',
-            background: showcaseLighting ? 'hsl(38 45% 58% / 0.1)' : 'transparent',
-          }}
-        >
-          {showcaseLighting ? '● Showcase' : '○ Showcase'}
-        </button>
+        <div className="fixed top-4 right-4 z-10 flex flex-col items-end gap-2">
+          {/* Showcase lighting toggle */}
+          <button
+            onClick={toggleShowcaseLighting}
+            className="px-3 py-1.5 text-[9px] tracking-[0.2em] uppercase border transition-colors"
+            style={{
+              borderColor: showcaseLighting ? 'hsl(38 45% 58% / 0.5)' : 'hsl(38 38% 93% / 0.15)',
+              color: showcaseLighting ? 'hsl(38 45% 58%)' : 'hsl(38 38% 93% / 0.4)',
+              background: showcaseLighting ? 'hsl(38 45% 58% / 0.1)' : 'transparent',
+            }}
+          >
+            {showcaseLighting ? '● Showcase' : '○ Showcase'}
+          </button>
+
+          {/* Tilt intensity slider */}
+          <div className="flex items-center gap-2 px-3 py-1.5 border transition-colors"
+            style={{
+              borderColor: 'hsl(38 38% 93% / 0.15)',
+              background: 'hsl(0 0% 4% / 0.6)',
+            }}
+          >
+            <span className="text-[9px] tracking-[0.15em] uppercase" style={{ color: 'hsl(38 38% 93% / 0.4)' }}>
+              Tilt
+            </span>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={tiltValue}
+              onChange={handleTiltChange}
+              className="w-16 h-1 appearance-none bg-museum-white/20 rounded cursor-pointer"
+              style={{ accentColor: 'hsl(38 45% 58%)' }}
+            />
+            <span className="text-[9px] w-6 text-right" style={{ color: 'hsl(38 38% 93% / 0.4)' }}>
+              {Math.round(tiltValue * 100)}
+            </span>
+          </div>
+        </div>
       )}
 
       {/* Scroll hint */}
-      {cameraState === 'corridor' && !showCaseStudy && (
+      {cameraState === 'corridor' && !showCaseStudy && !glideActive && (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-10 text-museum-white/25 text-[10px] tracking-[0.35em] uppercase animate-pulse pointer-events-none">
           Scroll to explore
         </div>
