@@ -56,8 +56,8 @@ All colors MUST be HSL.
     --museum-wall: 20 8% 14%;
     --museum-charcoal: 0 0% 10%;
 
-    /* Camera tilt tuning */
-    --camera-tilt-intensity: 1;
+    /* Camera tilt tuning (0.0–1.0, default 0.7) */
+    --camera-tilt-intensity: 0.7;
   }
 
   .dark {
