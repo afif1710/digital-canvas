@@ -24,6 +24,9 @@ interface MuseumStore {
   // Stored progress for case study restore
   storedProgress: number;
 
+  // Particle burst
+  particleBurstPosition: [number, number, number] | null;
+
   enterGallery: () => void;
   setCorridorProgress: (p: number) => void;
   zoomToArtwork: (id: string, index: number) => void;
@@ -35,6 +38,8 @@ interface MuseumStore {
   toggleShowcaseLighting: () => void;
   startGlide: (from: number, to: number, duration: number) => void;
   stopGlide: () => void;
+  triggerParticleBurst: (pos: [number, number, number]) => void;
+  clearParticleBurst: () => void;
 }
 
 export const useMuseumStore = create<MuseumStore>((set) => ({
@@ -44,7 +49,7 @@ export const useMuseumStore = create<MuseumStore>((set) => ({
   activeArtworkIndex: 0,
   showCaseStudy: false,
   showBooking: false,
-  showcaseLighting: false,
+  showcaseLighting: true,
   isLoaded: false,
   isMobile: false,
   reducedMotion: false,
@@ -54,6 +59,7 @@ export const useMuseumStore = create<MuseumStore>((set) => ({
   glideTo: 0,
   glideDuration: 1.6,
   storedProgress: 0,
+  particleBurstPosition: null,
 
   enterGallery: () => set({
     cameraState: 'corridor',
@@ -91,4 +97,6 @@ export const useMuseumStore = create<MuseumStore>((set) => ({
     glideDuration: duration,
   }),
   stopGlide: () => set({ glideActive: false }),
+  triggerParticleBurst: (pos) => set({ particleBurstPosition: pos }),
+  clearParticleBurst: () => set({ particleBurstPosition: null }),
 }));

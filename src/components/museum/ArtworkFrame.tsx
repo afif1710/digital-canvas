@@ -31,11 +31,12 @@ function FrameContent({ project, index, position, rotation }: ArtworkFrameProps)
   }, []);
 
   const onClick = useCallback(() => {
-    const { cameraState, zoomToArtwork } = useMuseumStore.getState();
+    const { cameraState, zoomToArtwork, triggerParticleBurst } = useMuseumStore.getState();
     if (cameraState === 'corridor') {
+      triggerParticleBurst(position);
       zoomToArtwork(project.id, index);
     }
-  }, [project.id, index]);
+  }, [project.id, index, position]);
 
   useFrame(() => {
     if (!groupRef.current) return;

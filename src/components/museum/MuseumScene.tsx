@@ -6,6 +6,8 @@ import { Lighting } from './Lighting';
 import { EntranceHall } from './EntranceHall';
 import { Corridor } from './Corridor';
 import { ArtworkFrame } from './ArtworkFrame';
+import { ParticleBurst } from './ParticleBurst';
+import { SideRoom } from './SideRoom';
 import { useMuseumStore } from '@/store/museumStore';
 import { PROJECTS, getAlcovePosition } from '@/data/projects';
 
@@ -43,6 +45,10 @@ export default function MuseumScene() {
           />
         );
       })}
+      <ParticleBurst />
+      {/* Side rooms at alcoves 3 and 6 (indices 2 and 5) */}
+      <SideRoom alcoveIndex={2} artworkIndices={[0, 4]} />
+      <SideRoom alcoveIndex={5} artworkIndices={[3, 7]} />
     </>
   );
 }
