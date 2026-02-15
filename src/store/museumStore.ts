@@ -24,6 +24,9 @@ interface MuseumStore {
   // Stored progress for case study restore
   storedProgress: number;
 
+  // Programmatic scroll flag (prevents scroll handler from killing glides)
+  _programmaticScroll: boolean;
+
   // Particle burst
   particleBurstPosition: [number, number, number] | null;
 
@@ -38,6 +41,7 @@ interface MuseumStore {
   toggleShowcaseLighting: () => void;
   startGlide: (from: number, to: number, duration: number) => void;
   stopGlide: () => void;
+  setProgrammaticScroll: (v: boolean) => void;
   triggerParticleBurst: (pos: [number, number, number]) => void;
   clearParticleBurst: () => void;
 }
@@ -59,6 +63,7 @@ export const useMuseumStore = create<MuseumStore>((set) => ({
   glideTo: 0,
   glideDuration: 1.6,
   storedProgress: 0,
+  _programmaticScroll: false,
   particleBurstPosition: null,
 
   enterGallery: () => set({
@@ -97,6 +102,7 @@ export const useMuseumStore = create<MuseumStore>((set) => ({
     glideDuration: duration,
   }),
   stopGlide: () => set({ glideActive: false }),
+  setProgrammaticScroll: (v) => set({ _programmaticScroll: v }),
   triggerParticleBurst: (pos) => set({ particleBurstPosition: pos }),
   clearParticleBurst: () => set({ particleBurstPosition: null }),
 }));

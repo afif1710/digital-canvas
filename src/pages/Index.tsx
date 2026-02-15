@@ -60,7 +60,7 @@ const Index = () => {
     if (cameraState !== 'corridor') return;
     const handleScroll = () => {
       if (useMuseumStore.getState().glideActive) {
-        // User scrolled during glide — interrupt it
+        if (useMuseumStore.getState()._programmaticScroll) return;
         useMuseumStore.getState().stopGlide();
       }
       const max = document.documentElement.scrollHeight - window.innerHeight;
