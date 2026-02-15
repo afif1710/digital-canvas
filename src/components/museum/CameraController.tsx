@@ -65,10 +65,12 @@ export function CameraController() {
       const p = glideFrom + (glideTo - glideFrom) * eased;
       store.setCorridorProgress(p);
 
-      // Sync scroll position
+      // Sync scroll position (flag as programmatic so scroll handler doesn't kill glide)
       const max = document.documentElement.scrollHeight - window.innerHeight;
       if (max > 0) {
+        store.setProgrammaticScroll(true);
         window.scrollTo({ top: p * max, behavior: 'auto' });
+        requestAnimationFrame(() => store.setProgrammaticScroll(false));
       }
 
       if (t >= 1) {
