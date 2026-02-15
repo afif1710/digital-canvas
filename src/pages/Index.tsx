@@ -5,7 +5,7 @@ import { useMuseumStore } from '@/store/museumStore';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { PROJECTS, getAlcoveProgress } from '@/data/projects';
 import { HeroOverlay } from '@/components/museum/HeroOverlay';
-import { RoomNav } from '@/components/museum/RoomNav';
+
 import { CaseStudyPanel } from '@/components/museum/CaseStudyPanel';
 import { BookingModal } from '@/components/museum/BookingModal';
 import { LoadingScreen } from '@/components/museum/LoadingScreen';
@@ -162,8 +162,6 @@ const Index = () => {
       <AnimatePresence>{showCaseStudy && <CaseStudyPanel />}</AnimatePresence>
       <BookingModal />
 
-      {/* Room navigation */}
-      {cameraState === 'corridor' && !showCaseStudy && <RoomNav />}
 
       {/* Scroll hint */}
       {cameraState === 'corridor' && !showCaseStudy && !glideActive && (
