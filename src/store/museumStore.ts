@@ -65,9 +65,9 @@ export const useMuseumStore = create<MuseumStore>((set) => ({
     cameraState: 'corridor',
     glideActive: true,
     glideStartTime: performance.now() / 1000,
-    glideFrom: 0,
+    glideFrom: -0.1, // maps to z=8 (entrance position) so camera doesn't stall
     glideTo: -1, // sentinel: will be replaced with first alcove progress
-    glideDuration: 1.6,
+    glideDuration: 2.0,
   }),
   setCorridorProgress: (corridorProgress) => set({ corridorProgress }),
   zoomToArtwork: (id, index) => set((s) => ({
