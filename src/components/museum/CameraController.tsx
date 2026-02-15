@@ -76,7 +76,7 @@ export function CameraController() {
       }
     }
 
-    const speed = reducedMotion ? 8 : (glideActive ? 14 : 2.5);
+    const speed = reducedMotion ? 8 : (glideActive ? 10 : 2.5);
     const factor = 1 - Math.exp(-speed * delta);
 
     if (cameraState === 'entrance') {
