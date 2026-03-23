@@ -7,8 +7,8 @@ import { CORRIDOR_START_Z, CORRIDOR_END_Z, CAMERA_Y, getAlcovePosition, getAlcov
 const ENTRANCE_POS = new THREE.Vector3(0, CAMERA_Y, 8);
 const ENTRANCE_LOOK = new THREE.Vector3(0, 1.6, 0);
 
-const MAX_YAW = (6 * Math.PI) / 180;
-const MAX_PITCH = (4 * Math.PI) / 180;
+const MAX_YAW = (12 * Math.PI) / 180;
+const MAX_PITCH = (8 * Math.PI) / 180;
 
 const _corridorPos = new THREE.Vector3();
 const _lookTarget = new THREE.Vector3();
