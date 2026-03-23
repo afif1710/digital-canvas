@@ -10,6 +10,7 @@ import { CaseStudyPanel } from '@/components/museum/CaseStudyPanel';
 import { BookingModal } from '@/components/museum/BookingModal';
 import { LoadingScreen } from '@/components/museum/LoadingScreen';
 import { MobileFallback } from '@/components/museum/MobileFallback';
+import { LuxuryCursor } from '@/components/museum/LuxuryCursor';
 import MuseumScene from '@/components/museum/MuseumScene';
 
 const SNAP_DEBOUNCE = 150;
