@@ -106,8 +106,8 @@ export function CameraController() {
       const intensity = tiltIntensity.current;
       const tX = state.pointer.y * MAX_PITCH * intensity;
       const tY = -state.pointer.x * MAX_YAW * intensity;
-      smoothTilt.current.x += (tX - smoothTilt.current.x) * 0.04;
-      smoothTilt.current.y += (tY - smoothTilt.current.y) * 0.04;
+      smoothTilt.current.x += (tX - smoothTilt.current.x) * 0.08;
+      smoothTilt.current.y += (tY - smoothTilt.current.y) * 0.08;
     } else {
       smoothTilt.current.x *= 0.92;
       smoothTilt.current.y *= 0.92;
