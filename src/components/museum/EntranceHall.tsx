@@ -13,7 +13,7 @@ export function EntranceHall() {
   });
 
   return (
-    <group>
+    <group position={[0, 0, 4]}>
       {/* Sculpture — brass torus knot, scaled up */}
       <mesh ref={sculptureRef} position={[0, 1.8, 0]} castShadow>
         <torusKnotGeometry args={[0.7, 0.22, 128, 32]} />
