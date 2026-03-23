@@ -61,7 +61,7 @@ export function CameraController() {
       const now = performance.now() / 1000;
       const elapsed = now - glideStartTime;
       const t = Math.min(1, elapsed / glideDuration);
-      const eased = easeOutCubic(t);
+      const eased = easeInOutCubic(t);
       const p = glideFrom + (glideTo - glideFrom) * eased;
       store.setCorridorProgress(p);
 
