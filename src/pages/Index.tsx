@@ -144,6 +144,7 @@ const Index = () => {
         background: 'hsl(var(--museum-bg))',
       }}
     >
+      <LuxuryCursor />
       <AnimatePresence>{!isLoaded && <LoadingScreen />}</AnimatePresence>
 
       <div className="fixed inset-0">
@@ -163,10 +164,9 @@ const Index = () => {
       <AnimatePresence>{showCaseStudy && <CaseStudyPanel />}</AnimatePresence>
       <BookingModal />
 
-
       {/* Scroll hint */}
       {cameraState === 'corridor' && !showCaseStudy && !glideActive && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-10 text-museum-white/25 text-[10px] tracking-[0.35em] uppercase animate-pulse pointer-events-none">
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-10 text-museum-white/25 font-ui text-[10px] tracking-[0.35em] uppercase animate-pulse pointer-events-none">
           Scroll to explore
         </div>
       )}
