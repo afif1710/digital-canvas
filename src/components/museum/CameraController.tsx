@@ -104,8 +104,8 @@ export function CameraController() {
     const enableTilt = !reducedMotion && !isTouchDevice.current && !showCaseStudy && cameraState === 'corridor' && !glideActive;
     if (enableTilt) {
       const intensity = tiltIntensity.current;
-      const tX = state.pointer.y * MAX_PITCH * intensity;
-      const tY = -state.pointer.x * MAX_YAW * intensity;
+      const tX = -state.pointer.y * MAX_PITCH * intensity;
+      const tY = state.pointer.x * MAX_YAW * intensity;
       smoothTilt.current.x += (tX - smoothTilt.current.x) * 0.08;
       smoothTilt.current.y += (tY - smoothTilt.current.y) * 0.08;
     } else {
