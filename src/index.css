@@ -112,8 +112,52 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-body;
     margin: 0;
     overflow-x: hidden;
+  }
+}
+
+/* Particle float animation */
+@keyframes particleFloat {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: var(--particle-opacity, 0.4);
+  }
+  90% {
+    opacity: var(--particle-opacity, 0.4);
+  }
+  100% {
+    transform: translateY(-110vh) translateX(var(--drift, 0px));
+    opacity: 0;
+  }
+}
+
+/* Shimmer text effect */
+.shimmer-text {
+  background: linear-gradient(
+    110deg,
+    hsl(var(--museum-white)) 0%,
+    hsl(var(--museum-white)) 40%,
+    hsl(var(--museum-gold-light)) 50%,
+    hsl(var(--museum-white)) 60%,
+    hsl(var(--museum-white)) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmerSweep 6s ease-in-out infinite;
+}
+
+@keyframes shimmerSweep {
+  0%, 100% {
+    background-position: 200% center;
+  }
+  50% {
+    background-position: -200% center;
   }
 }
