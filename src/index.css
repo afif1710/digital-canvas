@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -52,9 +52,16 @@ All colors MUST be HSL.
     /* Museum tokens */
     --museum-bg: 0 0% 4%;
     --museum-white: 38 38% 93%;
-    --museum-brass: 38 45% 58%;
+    --museum-brass: 43 55% 54%;
+    --museum-brass-light: 45 65% 66%;
     --museum-wall: 20 8% 14%;
     --museum-charcoal: 0 0% 10%;
+    --museum-gold: 43 55% 54%;
+    --museum-gold-light: 45 65% 66%;
+    --museum-text-secondary: 0 0% 54%;
+    --museum-card-bg: 0 0% 7%;
+    --museum-border: 43 55% 54% / 0.2;
+    --museum-warm-white: 36 47% 94%;
 
     /* Camera tilt tuning (0.0–1.0, default 0.7) */
     --camera-tilt-intensity: 0.7;
