@@ -68,12 +68,13 @@ export const useMuseumStore = create<MuseumStore>((set) => ({
 
   enterGallery: () => set({
     cameraState: 'corridor',
+    corridorProgress: 0,
     glideActive: true,
     _programmaticScroll: true,
     glideStartTime: performance.now() / 1000,
-    glideFrom: -0.1,
+    glideFrom: 0,
     glideTo: -1,
-    glideDuration: 2.0,
+    glideDuration: 2.8,
   }),
   setCorridorProgress: (corridorProgress) => set({ corridorProgress }),
   zoomToArtwork: (id, index) => set((s) => ({

@@ -16,8 +16,8 @@ const _finalLook = new THREE.Vector3();
 
 const FIRST_ALCOVE_PROGRESS = getAlcoveProgress(0);
 
-function easeOutCubic(t: number) {
-  return 1 - Math.pow(1 - t, 3);
+function easeInOutCubic(t: number) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
 function getCorridorPos(progress: number): THREE.Vector3 {
@@ -61,7 +61,7 @@ export function CameraController() {
       const now = performance.now() / 1000;
       const elapsed = now - glideStartTime;
       const t = Math.min(1, elapsed / glideDuration);
-      const eased = easeOutCubic(t);
+      const eased = easeInOutCubic(t);
       const p = glideFrom + (glideTo - glideFrom) * eased;
       store.setCorridorProgress(p);
 
@@ -78,7 +78,7 @@ export function CameraController() {
       }
     }
 
-    const speed = reducedMotion ? 8 : (glideActive ? 10 : 2.5);
+    const speed = reducedMotion ? 8 : (glideActive ? 4 : 2.5);
     const factor = 1 - Math.exp(-speed * delta);
 
     if (cameraState === 'entrance') {
