@@ -14,7 +14,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        serif: ['"Playfair Display"', 'Georgia', 'serif'],
+        display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        ui: ['Montserrat', 'system-ui', 'sans-serif'],
+        body: ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -64,8 +67,14 @@ export default {
           bg: "hsl(var(--museum-bg))",
           white: "hsl(var(--museum-white))",
           brass: "hsl(var(--museum-brass))",
+          "brass-light": "hsl(var(--museum-brass-light))",
           wall: "hsl(var(--museum-wall))",
           charcoal: "hsl(var(--museum-charcoal))",
+          gold: "hsl(var(--museum-gold))",
+          "gold-light": "hsl(var(--museum-gold-light))",
+          "text-secondary": "hsl(var(--museum-text-secondary))",
+          "card-bg": "hsl(var(--museum-card-bg))",
+          "warm-white": "hsl(var(--museum-warm-white))",
         },
       },
       borderRadius: {

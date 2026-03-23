@@ -10,6 +10,7 @@ import { CaseStudyPanel } from '@/components/museum/CaseStudyPanel';
 import { BookingModal } from '@/components/museum/BookingModal';
 import { LoadingScreen } from '@/components/museum/LoadingScreen';
 import { MobileFallback } from '@/components/museum/MobileFallback';
+import { LuxuryCursor } from '@/components/museum/LuxuryCursor';
 import MuseumScene from '@/components/museum/MuseumScene';
 
 const SNAP_DEBOUNCE = 150;
@@ -143,6 +144,7 @@ const Index = () => {
         background: 'hsl(var(--museum-bg))',
       }}
     >
+      <LuxuryCursor />
       <AnimatePresence>{!isLoaded && <LoadingScreen />}</AnimatePresence>
 
       <div className="fixed inset-0">
@@ -162,10 +164,9 @@ const Index = () => {
       <AnimatePresence>{showCaseStudy && <CaseStudyPanel />}</AnimatePresence>
       <BookingModal />
 
-
       {/* Scroll hint */}
       {cameraState === 'corridor' && !showCaseStudy && !glideActive && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-10 text-museum-white/25 text-[10px] tracking-[0.35em] uppercase animate-pulse pointer-events-none">
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-10 text-museum-white/25 font-ui text-[10px] tracking-[0.35em] uppercase animate-pulse pointer-events-none">
           Scroll to explore
         </div>
       )}
