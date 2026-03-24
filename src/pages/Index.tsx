@@ -5,12 +5,16 @@ import { useMuseumStore } from '@/store/museumStore';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { PROJECTS, getAlcoveProgress } from '@/data/projects';
 import { HeroOverlay } from '@/components/museum/HeroOverlay';
-
 import { CaseStudyPanel } from '@/components/museum/CaseStudyPanel';
 import { BookingModal } from '@/components/museum/BookingModal';
 import { LoadingScreen } from '@/components/museum/LoadingScreen';
 import { MobileFallback } from '@/components/museum/MobileFallback';
-import { LuxuryCursor } from '@/components/museum/LuxuryCursor';
+import { ScrollProgressBar } from '@/components/museum/ScrollProgressBar';
+import { SmartNavbar } from '@/components/museum/SmartNavbar';
+import { AboutSection } from '@/components/museum/AboutSection';
+import { ContactSection } from '@/components/museum/ContactSection';
+import { GalleryFooter } from '@/components/museum/Footer';
+import { BackToTop } from '@/components/museum/BackToTop';
 import MuseumScene from '@/components/museum/MuseumScene';
 
 const SNAP_DEBOUNCE = 150;
@@ -140,24 +144,39 @@ const Index = () => {
     <div
       className="relative"
       style={{
-        height: cameraState === 'corridor' ? '1200vh' : '100vh',
         background: 'hsl(var(--museum-bg))',
       }}
     >
-      <LuxuryCursor />
       <AnimatePresence>{!isLoaded && <LoadingScreen />}</AnimatePresence>
+      <ScrollProgressBar />
+      <SmartNavbar />
 
-      <div className="fixed inset-0">
-        <Canvas
-          shadows
-          camera={{ fov: 50, near: 0.1, far: 200, position: [0, 2.2, 8] }}
-          gl={{ antialias: true, alpha: false }}
-          dpr={[1, 1.5]}
-        >
-          <Suspense fallback={null}>
-            <MuseumScene />
-          </Suspense>
-        </Canvas>
+      {/* 3D Gallery section */}
+      <div
+        id="gallery"
+        style={{ height: cameraState === 'corridor' ? '1200vh' : '100vh' }}
+      >
+        <div className="fixed inset-0">
+          {/* Depth fog overlay */}
+          {cameraState === 'corridor' && (
+            <div
+              className="absolute inset-0 z-[1] pointer-events-none"
+              style={{
+                background: 'linear-gradient(to top, transparent 60%, rgba(10,10,10,0.9) 100%)',
+              }}
+            />
+          )}
+          <Canvas
+            shadows
+            camera={{ fov: 50, near: 0.1, far: 200, position: [0, 2.2, 8] }}
+            gl={{ antialias: true, alpha: false }}
+            dpr={[1, 1.5]}
+          >
+            <Suspense fallback={null}>
+              <MuseumScene />
+            </Suspense>
+          </Canvas>
+        </div>
       </div>
 
       <AnimatePresence>{cameraState === 'entrance' && isLoaded && <HeroOverlay />}</AnimatePresence>
@@ -170,6 +189,17 @@ const Index = () => {
           Scroll to explore
         </div>
       )}
+
+      {/* About, Contact, Footer — rendered below 3D section */}
+      {cameraState === 'corridor' && (
+        <>
+          <AboutSection />
+          <ContactSection />
+          <GalleryFooter />
+        </>
+      )}
+
+      <BackToTop />
     </div>
   );
 };
