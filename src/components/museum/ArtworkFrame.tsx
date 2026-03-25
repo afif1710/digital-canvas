@@ -56,7 +56,6 @@ function FrameContent({ project, index, position, rotation }: ArtworkFrameProps)
       onPointerOver={onOver}
       onPointerOut={onOut}
       onClick={onClick}
-      data-cursor="artwork"
     >
       {/* Outer frame — brushed brass with glow */}
       <mesh castShadow>
