@@ -69,6 +69,7 @@ export const useMuseumStore = create<MuseumStore>((set) => ({
   storedProgress: 0,
   _programmaticScroll: false,
   particleBurstPosition: null,
+  activeOverlay: null,
 
   enterGallery: () => set({
     cameraState: 'corridor',
