@@ -45,6 +45,7 @@ interface MuseumStore {
   startGlide: (from: number, to: number, duration: number) => void;
   stopGlide: () => void;
   setProgrammaticScroll: (v: boolean) => void;
+  setActiveOverlay: (v: 'about' | 'contact' | null) => void;
   triggerParticleBurst: (pos: [number, number, number]) => void;
   clearParticleBurst: () => void;
 }
