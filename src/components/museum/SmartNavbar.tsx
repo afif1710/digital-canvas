@@ -12,19 +12,21 @@ export function SmartNavbar() {
   const setActiveOverlay = useMuseumStore((s) => s.setActiveOverlay);
 
   useEffect(() => {
+    let scrollTimer: number | null = null;
     const handleScroll = () => {
-      const y = window.scrollY;
-      if (y < 80) {
-        setVisible(false);
-      } else if (y < lastScroll.current) {
-        setVisible(true); // scrolling up
-      } else {
-        setVisible(false); // scrolling down
-      }
-      lastScroll.current = y;
+      setVisible(false);
+      if (scrollTimer) clearTimeout(scrollTimer);
+      scrollTimer = window.setTimeout(() => {
+        if (window.scrollY > 80) {
+          setVisible(true);
+        }
+      }, 150);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (scrollTimer) clearTimeout(scrollTimer);
+    };
   }, []);
 
   // Only show in corridor state
