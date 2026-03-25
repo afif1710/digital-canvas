@@ -15,7 +15,7 @@ function AlcoveLight({ index }: { index: number }) {
     const proximity = cameraState === 'corridor'
       ? Math.max(0, 1 - Math.abs(corridorProgress - alcoveProgress) * 6)
       : 0.15;
-    const base = showcaseLighting ? 1.8 : 0.7;
+    const base = showcaseLighting ? 3.5 : 1.4;
     ref.current.intensity = base * proximity + 0.1;
   });
 
@@ -24,9 +24,27 @@ function AlcoveLight({ index }: { index: number }) {
       ref={ref}
       position={[alcove.position[0] * 0.7, 3.5, alcove.z]}
       color="#f5e6d3"
-      distance={8}
+      distance={12}
       decay={2}
       intensity={0.1}
+    />
+  );
+}
+
+/* Focused spotlight aimed directly at each artwork */
+function ArtworkSpotlight({ index }: { index: number }) {
+  const alcove = getAlcovePosition(index);
+  return (
+    <spotLight
+      position={[alcove.position[0] * 0.5, 4.0, alcove.z]}
+      target-position={[alcove.position[0], 2.0, alcove.z]}
+      angle={0.4}
+      penumbra={0.6}
+      intensity={2.5}
+      color="#fff5e6"
+      distance={10}
+      decay={2}
+      castShadow={false}
     />
   );
 }
@@ -122,6 +140,11 @@ export function Lighting() {
       {/* Per-alcove accent lights */}
       {PROJECTS.map((_, i) => (
         <AlcoveLight key={i} index={i} />
+      ))}
+
+      {/* Focused spotlights on each artwork */}
+      {PROJECTS.map((_, i) => (
+        <ArtworkSpotlight key={`spot-${i}`} index={i} />
       ))}
 
       {/* Wall sconces between alcoves */}
