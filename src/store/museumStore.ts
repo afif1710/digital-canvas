@@ -109,6 +109,7 @@ export const useMuseumStore = create<MuseumStore>((set) => ({
   }),
   stopGlide: () => set({ glideActive: false }),
   setProgrammaticScroll: (v) => set({ _programmaticScroll: v }),
+  setActiveOverlay: (v) => set({ activeOverlay: v }),
   triggerParticleBurst: (pos) => set({ particleBurstPosition: pos }),
   clearParticleBurst: () => set({ particleBurstPosition: null }),
 }));
