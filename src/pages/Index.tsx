@@ -106,6 +106,8 @@ const Index = () => {
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        const overlay = useMuseumStore.getState().activeOverlay;
+        if (overlay) { useMuseumStore.getState().setActiveOverlay(null); return; }
         if (showCaseStudy) { exitCaseStudy(); return; }
         if (showBooking) { useMuseumStore.getState().setShowBooking(false); return; }
       }
