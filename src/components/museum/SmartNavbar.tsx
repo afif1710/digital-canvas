@@ -119,7 +119,7 @@ export function SmartNavbar() {
                   initial={{ x: -40, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: i * 0.1 }}
-                  onClick={() => scrollToSection(item.href)}
+                  onClick={() => { setMobileOpen(false); item.action(); }}
                   className="font-display text-3xl text-museum-white hover:text-museum-gold transition-colors"
                 >
                   {item.label}

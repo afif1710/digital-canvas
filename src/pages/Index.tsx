@@ -190,14 +190,9 @@ const Index = () => {
         </div>
       )}
 
-      {/* About, Contact, Footer — rendered below 3D section */}
-      {cameraState === 'corridor' && (
-        <>
-          <AboutSection />
-          <ContactSection />
-          <GalleryFooter />
-        </>
-      )}
+      {/* About & Contact as fixed overlays, triggered by navbar */}
+      <OverlayPage />
+
 
       <BackToTop />
     </div>
