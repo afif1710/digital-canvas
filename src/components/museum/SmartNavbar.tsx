@@ -29,17 +29,13 @@ export function SmartNavbar() {
   // Only show in corridor state
   if (cameraState !== 'corridor') return null;
 
-  const navItems = [
-    { label: 'Gallery', href: '#gallery' },
-    { label: 'About', href: '#about' },
-    { label: 'Contact', href: '#contact' },
-  ];
+  const setActiveOverlay = useMuseumStore((s) => s.setActiveOverlay);
 
-  const scrollToSection = (href: string) => {
-    setMobileOpen(false);
-    const el = document.querySelector(href);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
+  const navItems = [
+    { label: 'Gallery', action: () => { setActiveOverlay(null); const el = document.querySelector('#gallery'); if (el) el.scrollIntoView({ behavior: 'smooth' }); } },
+    { label: 'About', action: () => setActiveOverlay('about') },
+    { label: 'Contact', action: () => setActiveOverlay('contact') },
+  ];
 
   return (
     <>
