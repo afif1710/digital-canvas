@@ -23,7 +23,7 @@ export function OverlayPage() {
           {/* Close button */}
           <button
             onClick={() => setActiveOverlay(null)}
-            className="fixed top-5 right-6 z-50 w-10 h-10 flex items-center justify-center text-museum-gold hover:text-museum-white transition-colors"
+            className="fixed top-5 right-6 z-[60] w-10 h-10 flex items-center justify-center text-museum-gold hover:text-museum-white transition-colors"
             aria-label="Close"
           >
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
