@@ -11,9 +11,7 @@ import { LoadingScreen } from '@/components/museum/LoadingScreen';
 import { MobileFallback } from '@/components/museum/MobileFallback';
 import { ScrollProgressBar } from '@/components/museum/ScrollProgressBar';
 import { SmartNavbar } from '@/components/museum/SmartNavbar';
-import { AboutSection } from '@/components/museum/AboutSection';
-import { ContactSection } from '@/components/museum/ContactSection';
-import { GalleryFooter } from '@/components/museum/Footer';
+import { OverlayPage } from '@/components/museum/OverlayPage';
 import { BackToTop } from '@/components/museum/BackToTop';
 import MuseumScene from '@/components/museum/MuseumScene';
 
@@ -108,6 +106,8 @@ const Index = () => {
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        const overlay = useMuseumStore.getState().activeOverlay;
+        if (overlay) { useMuseumStore.getState().setActiveOverlay(null); return; }
         if (showCaseStudy) { exitCaseStudy(); return; }
         if (showBooking) { useMuseumStore.getState().setShowBooking(false); return; }
       }
@@ -190,14 +190,9 @@ const Index = () => {
         </div>
       )}
 
-      {/* About, Contact, Footer — rendered below 3D section */}
-      {cameraState === 'corridor' && (
-        <>
-          <AboutSection />
-          <ContactSection />
-          <GalleryFooter />
-        </>
-      )}
+      {/* About & Contact as fixed overlays, triggered by navbar */}
+      <OverlayPage />
+
 
       <BackToTop />
     </div>

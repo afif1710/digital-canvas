@@ -29,17 +29,13 @@ export function SmartNavbar() {
   // Only show in corridor state
   if (cameraState !== 'corridor') return null;
 
-  const navItems = [
-    { label: 'Gallery', href: '#gallery' },
-    { label: 'About', href: '#about' },
-    { label: 'Contact', href: '#contact' },
-  ];
+  const setActiveOverlay = useMuseumStore((s) => s.setActiveOverlay);
 
-  const scrollToSection = (href: string) => {
-    setMobileOpen(false);
-    const el = document.querySelector(href);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
+  const navItems = [
+    { label: 'Gallery', action: () => { setActiveOverlay(null); const el = document.querySelector('#gallery'); if (el) el.scrollIntoView({ behavior: 'smooth' }); } },
+    { label: 'About', action: () => setActiveOverlay('about') },
+    { label: 'Contact', action: () => setActiveOverlay('contact') },
+  ];
 
   return (
     <>
@@ -66,7 +62,7 @@ export function SmartNavbar() {
             {navItems.map((item) => (
               <button
                 key={item.label}
-                onClick={() => scrollToSection(item.href)}
+                onClick={() => { setMobileOpen(false); item.action(); }}
                 className="font-ui text-[10px] tracking-[0.2em] uppercase text-museum-white/60 hover:text-museum-gold transition-colors relative group"
               >
                 {item.label}
@@ -123,7 +119,7 @@ export function SmartNavbar() {
                   initial={{ x: -40, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: i * 0.1 }}
-                  onClick={() => scrollToSection(item.href)}
+                  onClick={() => { setMobileOpen(false); item.action(); }}
                   className="font-display text-3xl text-museum-white hover:text-museum-gold transition-colors"
                 >
                   {item.label}

@@ -30,6 +30,9 @@ interface MuseumStore {
   // Particle burst
   particleBurstPosition: [number, number, number] | null;
 
+  // Overlay pages (About, Contact) — opened via navbar, not scroll
+  activeOverlay: 'about' | 'contact' | null;
+
   enterGallery: () => void;
   setCorridorProgress: (p: number) => void;
   zoomToArtwork: (id: string, index: number) => void;
@@ -42,6 +45,7 @@ interface MuseumStore {
   startGlide: (from: number, to: number, duration: number) => void;
   stopGlide: () => void;
   setProgrammaticScroll: (v: boolean) => void;
+  setActiveOverlay: (v: 'about' | 'contact' | null) => void;
   triggerParticleBurst: (pos: [number, number, number]) => void;
   clearParticleBurst: () => void;
 }
@@ -65,6 +69,7 @@ export const useMuseumStore = create<MuseumStore>((set) => ({
   storedProgress: 0,
   _programmaticScroll: false,
   particleBurstPosition: null,
+  activeOverlay: null,
 
   enterGallery: () => set({
     cameraState: 'corridor',
@@ -105,6 +110,7 @@ export const useMuseumStore = create<MuseumStore>((set) => ({
   }),
   stopGlide: () => set({ glideActive: false }),
   setProgrammaticScroll: (v) => set({ _programmaticScroll: v }),
+  setActiveOverlay: (v) => set({ activeOverlay: v }),
   triggerParticleBurst: (pos) => set({ particleBurstPosition: pos }),
   clearParticleBurst: () => set({ particleBurstPosition: null }),
 }));
