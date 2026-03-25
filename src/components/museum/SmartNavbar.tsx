@@ -9,6 +9,7 @@ export function SmartNavbar() {
   const lastScroll = useRef(0);
   const cameraState = useMuseumStore((s) => s.cameraState);
   const setShowBooking = useMuseumStore((s) => s.setShowBooking);
+  const setActiveOverlay = useMuseumStore((s) => s.setActiveOverlay);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,7 +30,6 @@ export function SmartNavbar() {
   // Only show in corridor state
   if (cameraState !== 'corridor') return null;
 
-  const setActiveOverlay = useMuseumStore((s) => s.setActiveOverlay);
 
   const navItems = [
     { label: 'Gallery', action: () => { setActiveOverlay(null); const el = document.querySelector('#gallery'); if (el) el.scrollIntoView({ behavior: 'smooth' }); } },
