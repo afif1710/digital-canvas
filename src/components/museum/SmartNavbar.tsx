@@ -62,7 +62,7 @@ export function SmartNavbar() {
             {navItems.map((item) => (
               <button
                 key={item.label}
-                onClick={() => scrollToSection(item.href)}
+                onClick={() => { setMobileOpen(false); item.action(); }}
                 className="font-ui text-[10px] tracking-[0.2em] uppercase text-museum-white/60 hover:text-museum-gold transition-colors relative group"
               >
                 {item.label}
