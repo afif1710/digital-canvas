@@ -9,6 +9,7 @@ export function SmartNavbar() {
   const lastScroll = useRef(0);
   const cameraState = useMuseumStore((s) => s.cameraState);
   const setShowBooking = useMuseumStore((s) => s.setShowBooking);
+  const setActiveOverlay = useMuseumStore((s) => s.setActiveOverlay);
 
   useEffect(() => {
     const handleScroll = () => {
