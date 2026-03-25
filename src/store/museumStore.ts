@@ -30,6 +30,9 @@ interface MuseumStore {
   // Particle burst
   particleBurstPosition: [number, number, number] | null;
 
+  // Overlay pages (About, Contact) — opened via navbar, not scroll
+  activeOverlay: 'about' | 'contact' | null;
+
   enterGallery: () => void;
   setCorridorProgress: (p: number) => void;
   zoomToArtwork: (id: string, index: number) => void;
